@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\BuySubs.API.props" />
+</Project>
