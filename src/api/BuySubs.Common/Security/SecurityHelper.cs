@@ -16,8 +16,8 @@ public static class SecurityHelper
                     prf: KeyDerivationPrf.HMACSHA256,
                     iterationCount: 10000,
                     numBytesRequested: 256 / 8
-                )
-        );
+        )
+    );
 
     public static byte[] GetRandomBytes(int length = 32)
     {
@@ -29,13 +29,6 @@ public static class SecurityHelper
         return salt;
     }
 
-    public static bool ValidatePassword(
-        string password,
-        string hash, 
-        string salt
-    )
-        => HashPassword(
-            password, 
-            Convert.FromBase64String(salt)
-        ) == hash;
+    public static bool ValidatePassword(string password, string hash, string salt)
+        => HashPassword(password, Convert.FromBase64String(salt)) == hash;
 }

@@ -2,7 +2,7 @@
 
 namespace BuySubs.API.Filters;
 
-public class ValidationFilter<T> : IEndpointFilter
+internal class ValidationFilter<T> : IEndpointFilter
 {
     private readonly IValidator<T> _validator;
 

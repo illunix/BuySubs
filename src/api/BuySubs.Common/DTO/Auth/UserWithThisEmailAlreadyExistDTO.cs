@@ -1,6 +1,6 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 
-namespace BuySubs.Common.DTO.Auth.SignUpCommand;
+namespace BuySubs.Common.DTO.Auth;
 
 [DynamoDBTable("Users")]
 public record UserWithThisEmailAlreadyExistDTO
