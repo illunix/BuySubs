@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32811.315
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuySubs.API", "BuySubs\BuySubs.API.csproj", "{8FD06D0D-2381-46A2-B0F0-4735BCDE9BA3}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuySubs.BLL", "BuySubs.BLL\BuySubs.BLL.csproj", "{F80EED87-5BE3-4EA2-AC57-9DF9D5F2BF5A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuySubs.BLL.Interfaces", "BuySubs.BLL.Interfaces\BuySubs.BLL.Interfaces.csproj", "{34C2AFC2-4BB9-4C8C-8ECC-8353078E7EB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuySubs.Common", "BuySubs.Common\BuySubs.Common.csproj", "{940A0E15-E5EC-4905-8A18-AB450F5C422A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuySubs.Common", "BuySubs.Common\BuySubs.Common.csproj", "{940A0E15-E5EC-4905-8A18-AB450F5C422A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuySubs.API", "BuySubs.API\BuySubs.API.csproj", "{5E26F420-066B-41CA-8E2C-826737257AC4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8FD06D0D-2381-46A2-B0F0-4735BCDE9BA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8FD06D0D-2381-46A2-B0F0-4735BCDE9BA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8FD06D0D-2381-46A2-B0F0-4735BCDE9BA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8FD06D0D-2381-46A2-B0F0-4735BCDE9BA3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F80EED87-5BE3-4EA2-AC57-9DF9D5F2BF5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F80EED87-5BE3-4EA2-AC57-9DF9D5F2BF5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F80EED87-5BE3-4EA2-AC57-9DF9D5F2BF5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{940A0E15-E5EC-4905-8A18-AB450F5C422A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{940A0E15-E5EC-4905-8A18-AB450F5C422A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{940A0E15-E5EC-4905-8A18-AB450F5C422A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E26F420-066B-41CA-8E2C-826737257AC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E26F420-066B-41CA-8E2C-826737257AC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E26F420-066B-41CA-8E2C-826737257AC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E26F420-066B-41CA-8E2C-826737257AC4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
