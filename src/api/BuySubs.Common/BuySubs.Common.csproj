@@ -8,11 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.4.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BuySubs.BLL.Interfaces\BuySubs.BLL.Interfaces.csproj" />
-    <ProjectReference Include="..\BuySubs.Common\BuySubs.Common.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="6.0.8" />
   </ItemGroup>
 
 </Project>

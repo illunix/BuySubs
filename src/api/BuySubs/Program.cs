@@ -1,10 +1,12 @@
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using BuySubs.API.Extensions;
-using BuySubs.API.Filters;
 using BuySubs.BLL.Commands.Auth;
 using FluentValidation;
 using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 builder.Services
     .AddValidatorsFromAssemblyContaining<Program>()
@@ -13,7 +15,13 @@ builder.Services
         typeof(SignUpCommand)
     )
     .AddEndpointsApiExplorer()
-    .AddSwaggerGen();
+    .AddSwaggerGen()
+    .AddDefaultAWSOptions(configuration.GetAWSOptions())
+#if RELEASE
+    .AddAWSLambdaHosting(LambdaEventSource.HttpApi);
+#endif
+    .AddAWSService<IAmazonDynamoDB>()
+    .AddScoped<IDynamoDBContext, DynamoDBContext>();
 
 var app = builder.Build();
 
