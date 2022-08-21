@@ -3,10 +3,12 @@ using BuySubs.BLL.Commands.Auth;
 using BuySubs.BLL.Exceptions;
 using BuySubs.BLL.Exceptions.Auth;
 using BuySubs.Common.DTO.Auth;
+using BuySubs.Common.Options;
 using BuySubs.Common.Security;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Authentication;
@@ -20,10 +22,15 @@ internal sealed class AuthCommandHandlers :
     IRequestHandler<SignUpCommand, IResult>
 {
     private readonly IDynamoDBContext _ctx;
+    private readonly JwtOptions _jwtOptions;
 
-    public AuthCommandHandlers(IDynamoDBContext ctx)
+    public AuthCommandHandlers(
+        IDynamoDBContext ctx,
+        IOptions<JwtOptions> jwtOptions
+    )
     {
         _ctx = ctx;
+        _jwtOptions = jwtOptions.Value;
     }
 
     public async Task<IResult> Handle(
@@ -46,25 +53,29 @@ internal sealed class AuthCommandHandlers :
             throw new InvalidCredentialsException();
         }
 
-        return Results.Ok(new JwtSecurityTokenHandler().WriteToken(
-            new JwtSecurityToken(
-                issuer: "",
-                audience: "",
-                claims: new Claim[] {
-                    // new Claim(ClaimTypes.Role, "admin"),
-                    new Claim(
-                        ClaimTypes.Name,
-                        "桂素伟"
-                    )
-                },
-                notBefore: DateTime.UtcNow,
-                expires: DateTime.UtcNow.AddSeconds(500000),
-                signingCredentials: new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.ASCII.GetBytes("1234567890abcdefg")),
-                    SecurityAlgorithms.HmacSha256
-                ))
-            )
-        );
+        return Results.Ok(new
+        {
+            access_token = new JwtSecurityTokenHandler().WriteToken(
+                new JwtSecurityToken(
+                    issuer: _jwtOptions.Issuer,
+                    audience: _jwtOptions.Audience,
+                    claims: new Claim[] {
+                        new Claim(
+                            ClaimTypes.NameIdentifier,
+                            user.Email!
+                        ),
+                        new Claim(
+                            JwtRegisteredClaimNames.Jti,
+                            Guid.NewGuid().ToString()   
+                        )
+                    },
+                    notBefore: _jwtOptions.NotBefore,
+                    expires: _jwtOptions.Expiration,
+                    signingCredentials: _jwtOptions.SigningCredentials
+                )
+            ),
+            refresh_token = Convert.ToBase64String(SecurityHelper.GetRandomBytes())
+        });
     }
 
     // [HttpPost("auth/sign-up")]
@@ -88,7 +99,7 @@ internal sealed class AuthCommandHandlers :
                 salt
             ),
             Salt = Convert.ToBase64String(salt)
-    });
+        });
 
         return Results.Ok();
     }
