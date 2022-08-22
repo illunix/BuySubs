@@ -2,6 +2,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using BuySubs.API.Extensions;
 using BuySubs.BLL.Commands.Auth;
+using BuySubs.BLL.Commands.Sites;
 using BuySubs.Common.Options;
 using FluentValidation;
 using MediatR;
@@ -102,6 +103,11 @@ app
     .Post<SignInCommand>("auth/sign-in")
     .Post<SignUpCommand>("auth/sign-up");
 
+#endregion
+
+#region Sites
+app
+    .Post<CreateSiteCommand>("site");
 #endregion
 
 app.Run();
