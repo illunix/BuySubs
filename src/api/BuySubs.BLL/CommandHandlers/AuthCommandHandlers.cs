@@ -84,7 +84,7 @@ internal sealed class AuthCommandHandlers :
         CancellationToken ct
     )
     {
-        if ((await _ctx.LoadAsync<UserWithThisEmailAlreadyExistDTO>(req.Email)) is not null)
+        if (await _ctx.LoadAsync<UserWithThisEmailAlreadyExistDTO>(req.Email) is not null)
         {
             throw new UserWithThisEmailAlreadyExistException();
         }
