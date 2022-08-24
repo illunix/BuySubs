@@ -1,6 +1,7 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using BuySubs.API.Extensions;
+using BuySubs.API.Filters;
 using BuySubs.BLL.Commands.Auth;
 using BuySubs.BLL.Commands.Sites;
 using BuySubs.Common.Options;
@@ -15,11 +16,15 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
 var configuration = builder.Configuration;
 
 var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["jwt:secretKey"]!));
 
-builder.Services
+services.AddMvcCore(q =>
+{
+    q.Filters.Add(typeof(CustomExceptionFilterAttribute));
+}).Services
     .AddValidatorsFromAssemblyContaining<Program>()
     .AddMediatR(
         q => q.AsScoped(),

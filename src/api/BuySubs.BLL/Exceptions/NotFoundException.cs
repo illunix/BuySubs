@@ -1,6 +1,6 @@
 ﻿namespace BuySubs.BLL.Exceptions;
 
-internal sealed class NotFoundException : Exception
+public sealed class NotFoundException : Exception
 {
     public NotFoundException(
         string name,
