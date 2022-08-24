@@ -100,9 +100,4 @@ app
 
 app.MapEndpoints();
 
-#region Sites
-app
-    .Post<CreateSiteCommand>("site");
-#endregion
-
 app.Run();
