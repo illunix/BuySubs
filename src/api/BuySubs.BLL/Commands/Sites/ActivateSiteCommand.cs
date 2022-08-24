@@ -2,7 +2,6 @@
 
 namespace BuySubs.BLL.Commands.Sites;
 
-public readonly record struct CreateSiteCommand(
-    string Name,
-    bool IsActive
+public readonly record struct ActivateSiteCommand(
+    string Name
 ) : IHttpRequest;

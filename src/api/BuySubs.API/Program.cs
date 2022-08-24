@@ -107,7 +107,9 @@ app
 
 #region Sites
 app
-    .Post<CreateSiteCommand>("site");
+    .Post<CreateSiteCommand>("site")
+    .Post<ActivateSiteCommand>("site/activate")
+    .Post<DeactivateSiteCommand>("site/deactivate");
 #endregion
 
 app.Run();
