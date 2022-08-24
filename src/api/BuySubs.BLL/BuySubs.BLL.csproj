@@ -8,12 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.4.1" />
+    <PackageReference Include="FluentValidation" Version="11.2.0" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.22.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.22.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0-preview.4.22224.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BuySubs.API.EndpointsGenerator\BuySubs.API.EndpointsGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
     <ProjectReference Include="..\BuySubs.BLL.Interfaces\BuySubs.BLL.Interfaces.csproj" />
     <ProjectReference Include="..\BuySubs.Common\BuySubs.Common.csproj" />
   </ItemGroup>

@@ -33,6 +33,7 @@ internal sealed class AuthCommandHandlers :
         _jwtOptions = jwtOptions.Value;
     }
 
+    [HttpPost("auth/sign-in")]
     public async Task<IResult> Handle(
         SignInCommand req,
         CancellationToken ct
@@ -78,7 +79,7 @@ internal sealed class AuthCommandHandlers :
         });
     }
 
-    // [HttpPost("auth/sign-up")]
+    [HttpPost("auth/sign-up")]
     public async Task<IResult> Handle(
         SignUpCommand req,
         CancellationToken ct

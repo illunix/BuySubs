@@ -97,11 +97,6 @@ app
     .UseAuthentication()
     .UseAuthorization();
 
-#region Auth
-app
-    .Post<SignInCommand>("auth/sign-in")
-    .Post<SignUpCommand>("auth/sign-up");
-
-#endregion
+app.MapEndpoints();
 
 app.Run();

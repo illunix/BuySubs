@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BuySubs.BLL\BuySubs.BLL.csproj" />
+	  <ProjectReference Include="..\BuySubs.BLL\BuySubs.BLL.csproj" />
   </ItemGroup>
 
 </Project>
