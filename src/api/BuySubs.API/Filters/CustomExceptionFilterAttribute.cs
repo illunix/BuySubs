@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
+using BuySubs.API.Extensions;
 
 namespace BuySubs.API.Filters;
 
