@@ -3,7 +3,8 @@ using BuySubs.BLL.Exceptions;
 using BuySubs.BLL.Exceptions.Auth;
 using FluentValidation;
 using System.Net;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
+namespace BuySubs.API.Extensions;
 
 internal static class ExceptionFilterExtensions
 {
