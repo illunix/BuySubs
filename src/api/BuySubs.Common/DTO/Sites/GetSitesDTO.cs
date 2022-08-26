@@ -3,7 +3,7 @@
 namespace BuySubs.Common.DTO.Sites;
 
 [DynamoDBTable("Sites")]
-public record GetAllSitesDTO
+public record GetSitesDTO
 {
     public string? Name { get; init; }
 

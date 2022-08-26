@@ -6,4 +6,6 @@ namespace BuySubs.Common.DTO.Sites;
 public record CreateSiteDTO
 {
     public required string? Name { get; init; }
+
+    public required bool? IsActive { get; init; }
 }

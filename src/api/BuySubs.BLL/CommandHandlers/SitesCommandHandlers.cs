@@ -2,11 +2,10 @@
 using BuySubs.BLL.Commands.Sites;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using BuySubs.Common.DTO.Sites;
-using System.Threading.Tasks;
 using BuySubs.BLL.Exceptions.Sites;
 using Microsoft.AspNetCore.Mvc;
 using BuySubs.BLL.Exceptions;
+using BuySubs.Common.DTO.Sites;
 
 namespace BuySubs.BLL.CommandHandlers;
 
@@ -14,14 +13,11 @@ internal sealed class SitesCommandHandlers :
     IRequestHandler<CreateSiteCommand, IResult>,
     IRequestHandler<ActivateSiteCommand, IResult>,
     IRequestHandler<DeactivateSiteCommand, IResult>,
-    IRequestHandler<GetAllSitesCommand, IResult>,
     IRequestHandler<DeleteSiteCommand, IResult>
 {
     private readonly IDynamoDBContext _ctx;
 
-    public SitesCommandHandlers(
-        IDynamoDBContext ctx
-    )
+    public SitesCommandHandlers(IDynamoDBContext ctx)
     {
         _ctx = ctx; 
     }
@@ -39,7 +35,8 @@ internal sealed class SitesCommandHandlers :
 
         await _ctx.SaveAsync(new CreateSiteDTO
         {
-            Name = req.Name
+            Name = req.Name,
+            IsActive = req.IsActive
         });
 
         return Results.Ok();
@@ -60,7 +57,7 @@ internal sealed class SitesCommandHandlers :
 
         if (site.IsActive is true)
         {
-            throw new SiteAlreadyActivatedException();
+            throw new SiteIsAlreadyActiveException();
         }
 
         await _ctx.SaveAsync(new ActivateSiteDTO
@@ -87,7 +84,7 @@ internal sealed class SitesCommandHandlers :
 
         if (site.IsActive is false)
         {
-            throw new SiteAlreadyDectivatedException();
+            throw new SiteIsAlreadyInactiveException();
         }
 
         await _ctx.SaveAsync(new DeactivateSiteDTO
@@ -99,14 +96,7 @@ internal sealed class SitesCommandHandlers :
         return Results.Ok();
     }
 
-    [HttpGet]
-    public async Task<IResult> Handle(
-        GetAllSitesCommand req,
-        CancellationToken ct
-    )
-    => Results.Ok(await _ctx.ScanAsync<GetAllSitesDTO>(default).GetRemainingAsync());
-
-    [HttpDelete]
+    [HttpDelete("sites")]
     public async Task<IResult> Handle(
         DeleteSiteCommand req,
         CancellationToken ct
