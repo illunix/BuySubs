@@ -14,22 +14,18 @@ namespace BuySubs.API.EndpointsGenerator;
 [Generator]
 internal class SourceGenerator : ISourceGenerator
 {
-    public void Initialize(GeneratorInitializationContext context)
-    {
-        // Debugger.Launch();
+    public void Initialize(GeneratorInitializationContext ctx)
+        => ctx.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
 
-        context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
-    }
-
-    public void Execute(GeneratorExecutionContext context)
+    public void Execute(GeneratorExecutionContext ctx)
     {
-        if (context.SyntaxReceiver is not SyntaxReceiver syntaxReceiver)
+        if (ctx.SyntaxReceiver is not SyntaxReceiver syntaxReceiver)
         {
             return;
         }
 
         var methods = GetMethods(
-            context,
+            ctx,
             syntaxReceiver
         );
 
@@ -114,8 +110,25 @@ internal class ValidationFilter<T> : IEndpointFilter
                 Encoding.UTF8
             )
         );
-    }
 
+        var attributes = new StringBuilder();
+
+        attributes.AppendLine(
+@"using System;
+
+namespace BuySubs.API.Attributes;
+
+[AttributeUsage(AttributeTargets.Method)]  
+public class NoValidationAttribute : Attribute { }"
+        );
+        context.AddSource(
+            "BuySubs.API.Attributes.g.cs",
+            SourceText.From(
+                attributes.ToString(),
+                Encoding.UTF8
+            )
+        );
+    }
 
     private static string GenerateEndpoints(IEnumerable<IMethodSymbol> methods)
     {
@@ -123,7 +136,7 @@ internal class ValidationFilter<T> : IEndpointFilter
 
         foreach (var method in methods)
         {
-            var httpAttr = method.GetAttributes().FirstOrDefault()!;
+            var httpAttr = method.GetAttributes().Where(q => q.AttributeClass!.Name.StartsWith("Http")).FirstOrDefault()!;
             var httpMethod = httpAttr.AttributeClass?.Name
                 .Replace(
                     "Http",
@@ -133,7 +146,9 @@ internal class ValidationFilter<T> : IEndpointFilter
                     "Attribute",
                     ""
                 );
-            var requestType = method.Parameters.FirstOrDefault()!.Type;
+            var hasNoValidateAttr = method.GetAttributes().Where(q => q.AttributeClass!.Name.StartsWith("No")).Any();
+            var requestType = method.Parameters.FirstOrDefault()!;
+            var requestTypeType = requestType.Type;
 
             var route = httpAttr.ConstructorArguments.FirstOrDefault().Value;
 
@@ -141,12 +156,11 @@ internal class ValidationFilter<T> : IEndpointFilter
 @$"app.Map{httpMethod}(
             ""{route}"",
             async (
-                {requestType} req,
+                [AsParameters] {requestTypeType} req,
                 IMediator mediator
             )
                 => await mediator.Send(req)
-            )
-                .AddEndpointFilter<ValidationFilter<{requestType}>>();"
+            ){(hasNoValidateAttr ? ";" : $".AddEndpointFilter<ValidationFilter<{requestTypeType}>>();")}"
             );
         }
 
