@@ -51,7 +51,7 @@ public static class ApiExtensions
 "
         );
 
-        context.AddSource(
+        ctx.AddSource(
             "BuySubs.API.Extensions.g.cs",
             SourceText.From(
                 extensions.ToString(),
@@ -103,7 +103,7 @@ internal class ValidationFilter<T> : IEndpointFilter
     }
 }"
         );
-        context.AddSource(
+        ctx.AddSource(
             "BuySubs.API.Filters.g.cs",
             SourceText.From(
                 filters.ToString(),
@@ -121,7 +121,7 @@ namespace BuySubs.API.Attributes;
 [AttributeUsage(AttributeTargets.Method)]  
 public class NoValidationAttribute : Attribute { }"
         );
-        context.AddSource(
+        ctx.AddSource(
             "BuySubs.API.Attributes.g.cs",
             SourceText.From(
                 attributes.ToString(),
