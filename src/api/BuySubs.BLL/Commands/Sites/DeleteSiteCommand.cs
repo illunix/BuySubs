@@ -2,6 +2,4 @@
 
 namespace BuySubs.BLL.Commands.Sites;
 
-public readonly record struct DeleteSiteCommand(
-    string Name
-) : IHttpRequest;
+public readonly record struct DeleteSiteCommand(string Name) : IHttpRequest;
