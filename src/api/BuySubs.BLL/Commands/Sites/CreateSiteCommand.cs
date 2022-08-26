@@ -8,5 +8,6 @@ using System.Threading.Tasks;
 namespace BuySubs.BLL.Commands.Sites;
 
 public readonly record struct CreateSiteCommand(
-    string Name    
+    string Name,
+    bool IsActive
 ) : IHttpRequest;
