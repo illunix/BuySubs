@@ -10,14 +10,14 @@ using BuySubs.API.Attributes;
 
 namespace BuySubs.BLL.QueryHandlers;
 
-internal class UsersCommandHandlers :
+internal class UsersQueryHandlers :
     IRequestHandler<GetUsersCountQuery, IResult>
 {
-    private readonly IAmazonDynamoDB _ctx;
+    private readonly IAmazonDynamoDB _db;
 
-    public UsersCommandHandlers(IAmazonDynamoDB ctx)
+    public UsersQueryHandlers(IAmazonDynamoDB db)
     {
-        _ctx = ctx;
+        _db = db;
     }
 
     [HttpGet("users")]
@@ -26,5 +26,5 @@ internal class UsersCommandHandlers :
         GetUsersCountQuery req,
         CancellationToken ct
     )
-        => Results.Ok((await _ctx.ScanAsync(new() { TableName = "Users", Select = Select.COUNT })).Count);
+        => Results.Ok((await _db.ScanAsync(new() { TableName = "Users", Select = Select.COUNT })).Count);
 }

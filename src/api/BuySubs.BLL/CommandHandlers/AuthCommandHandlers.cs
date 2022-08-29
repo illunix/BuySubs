@@ -1,4 +1,6 @@
-﻿using Amazon.DynamoDBv2.DataModel;
+﻿using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.Model;
 using BuySubs.BLL.Commands.Auth;
 using BuySubs.BLL.Exceptions;
 using BuySubs.BLL.Exceptions.Auth;
@@ -22,14 +24,17 @@ internal sealed class AuthCommandHandlers :
     IRequestHandler<SignUpCommand, IResult>
 {
     private readonly IDynamoDBContext _ctx;
+    private readonly IAmazonDynamoDB _db;
     private readonly JwtOptions _jwtOptions;
 
     public AuthCommandHandlers(
         IDynamoDBContext ctx,
+        IAmazonDynamoDB db,
         IOptions<JwtOptions> jwtOptions
     )
     {
         _ctx = ctx;
+        _db = db;
         _jwtOptions = jwtOptions.Value;
     }
 
@@ -39,6 +44,7 @@ internal sealed class AuthCommandHandlers :
         CancellationToken ct
     )
     {
+
         var user = await _ctx.LoadAsync<UserSignInDTO>(req.Email);
         if (user is null)
         {
@@ -85,9 +91,20 @@ internal sealed class AuthCommandHandlers :
         CancellationToken ct
     )
     {
-        if (await _ctx.LoadAsync<UserWithThisEmailAlreadyExistDTO>(req.Email) is not null)
+        if ((await _db.ScanAsync(new() 
+        {
+            Select = Select.COUNT,
+            TableName = "Users", 
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+            {
+                { ":val", new() { S = req.Email } }
+            },
+            FilterExpression = "Email = :val"
+
+        })).Count is 1)
         {
             throw new UserWithThisEmailAlreadyExistException();
+
         }
 
         var salt = SecurityHelper.GetRandomBytes();
