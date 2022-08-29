@@ -11,8 +11,6 @@ public sealed class CreateDiscountCommandValidator : AbstractValidator<CreateDis
             .NotEmpty();
 
         RuleFor(q => q.Value)
-            .GreaterThan(0)
-            .LessThan(100)
             .NotEmpty();
 
         RuleFor(q => q.IsActive)

@@ -1,18 +1,11 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 using BuySubs.BLL.Commands.Discounts;
-using BuySubs.BLL.Commands.Sites;
 using BuySubs.BLL.Exceptions;
 using BuySubs.BLL.Exceptions.Discounts;
 using BuySubs.Common.DTO.Discounts;
-using BuySubs.Common.DTO.Sites;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BuySubs.BLL.CommandHandlers;
 
@@ -25,7 +18,8 @@ internal sealed class DiscountsCommandHandlers :
 {
     private readonly IDynamoDBContext _ctx;
 
-    public DiscountsCommandHandlers(IDynamoDBContext ctx)    {
+    public DiscountsCommandHandlers(IDynamoDBContext ctx)
+    {
         _ctx = ctx;
     }
 
