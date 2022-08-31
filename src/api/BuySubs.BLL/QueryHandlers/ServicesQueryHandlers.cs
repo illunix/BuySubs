@@ -2,7 +2,7 @@
 using BuySubs.BLL.Queries.Services;
 using BuySubs.Common.DTO.Services;
 using BuySubs.DAL.Context;
-using MediatR;
+using BuySubs.BLL.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BuySubs.BLL.QueryHandlers;
 
 internal sealed class ServicesQueryHandlers
-    : IRequestHandler<GetServicesQuery, IResult>
+    : IHttpRequestHandler<GetServicesQuery>
 {
     private readonly InternalDbContext _ctx;
 
