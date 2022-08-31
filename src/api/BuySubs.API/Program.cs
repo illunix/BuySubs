@@ -1,17 +1,12 @@
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
 using BuySubs.API.Extensions;
 using BuySubs.API.Filters;
 using BuySubs.BLL.Commands.Auth;
-using BuySubs.BLL.Commands.Sites;
 using BuySubs.Common.Options;
+using BuySubs.DAL.Context;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -25,6 +20,7 @@ services.AddMvcCore(q =>
 {
     q.Filters.Add(typeof(CustomExceptionFilterAttribute));
 }).Services
+    .AddDbContext<InternalDbContext>(q => q.UseNpgsql(configuration["dbConnectionString"]))
     .AddValidatorsFromAssemblyContaining<Program>()
     .AddMediatR(
         q => q.AsScoped(),
@@ -34,8 +30,6 @@ services.AddMvcCore(q =>
 #if RELEASE
     .AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 #endif
-    .AddAWSService<IAmazonDynamoDB>()
-    .AddScoped<IDynamoDBContext, DynamoDBContext>()
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
     .Configure<JwtOptions>(q =>

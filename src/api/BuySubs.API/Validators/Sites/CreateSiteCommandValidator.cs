@@ -9,8 +9,5 @@ public sealed class CreateSiteCommandValidator : AbstractValidator<CreateSiteCom
     {
         RuleFor(q => q.Name)
             .NotEmpty();
-
-        RuleFor(q => q.IsActive)
-            .NotNull();
     }
 }
