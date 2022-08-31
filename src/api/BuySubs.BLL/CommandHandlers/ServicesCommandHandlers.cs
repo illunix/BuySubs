@@ -2,6 +2,7 @@
 using BuySubs.BLL.Exceptions;
 using BuySubs.DAL.Context;
 using BuySubs.DAL.Entities;
+using BuySubs.BLL.Interfaces
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
