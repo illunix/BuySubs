@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore;
 namespace BuySubs.BLL.CommandHandlers;
 
 internal sealed class ServicesCommandHandlers :
-    IRequestHandler<CreateServiceCommand, IResult>,
-    IRequestHandler<UpdateServiceCommand, IResult>
+    IHttpRequestHandler<CreateServiceCommand>,
+    IHttpRequestHandler<UpdateServiceCommand>
 {
     private readonly InternalDbContext _ctx;
 
