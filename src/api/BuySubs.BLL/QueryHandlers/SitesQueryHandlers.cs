@@ -6,18 +6,17 @@ using BuySubs.API.Attributes;
 using BuySubs.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using BuySubs.Common.DTO.Sites;
+using BuySubs.BLL.Interfaces;
 
 namespace BuySubs.BLL.QueryHandlers;
 
 internal class SitesQueryHandlers :
-    IRequestHandler<GetUsersCountQuery, IResult>
+    IHttpRequestHandler<GetUsersCountQuery>
 {
     private readonly InternalDbContext _ctx;
 
     public SitesQueryHandlers(InternalDbContext ctx)
-    {
-        _ctx = ctx;
-    }
+        => _ctx = ctx;
 
     [HttpGet("sites")]
     [NoValidation]
