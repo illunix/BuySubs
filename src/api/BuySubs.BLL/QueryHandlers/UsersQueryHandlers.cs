@@ -5,11 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using BuySubs.API.Attributes;
 using BuySubs.DAL.Context;
 using Microsoft.EntityFrameworkCore;
+using BuySubs.BLL.Interfaces;
 
 namespace BuySubs.BLL.QueryHandlers;
 
 internal class UsersQueryHandlers :
-    IRequestHandler<GetUsersCountQuery, IResult>
+    IHttpRequestHandler<GetUsersCountQuery>
 {
     private readonly InternalDbContext _ctx;
 

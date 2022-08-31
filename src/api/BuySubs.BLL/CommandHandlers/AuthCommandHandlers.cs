@@ -1,26 +1,23 @@
 ﻿using BuySubs.BLL.Commands.Auth;
 using BuySubs.BLL.Exceptions;
 using BuySubs.BLL.Exceptions.Auth;
+using BuySubs.BLL.Interfaces;
 using BuySubs.Common.Options;
 using BuySubs.Common.Security;
 using BuySubs.DAL.Context;
 using BuySubs.DAL.Entities;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Authentication;
 using System.Security.Claims;
-using System.Text;
 
 namespace BuySubs.BLL.CommandHandlers;
 
 internal sealed class AuthCommandHandlers :
-    IRequestHandler<SignInCommand, IResult>,
-    IRequestHandler<SignUpCommand, IResult>
+    IHttpRequestHandler<SignInCommand>,
+    IHttpRequestHandler<SignUpCommand>
 {
     private readonly InternalDbContext _ctx;
     private readonly JwtOptions _jwtOptions;

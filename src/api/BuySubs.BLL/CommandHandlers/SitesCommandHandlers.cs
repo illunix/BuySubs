@@ -1,9 +1,9 @@
 ﻿using BuySubs.BLL.Commands.Sites;
 using BuySubs.BLL.Exceptions;
 using BuySubs.BLL.Exceptions.Sites;
+using BuySubs.BLL.Interfaces;
 using BuySubs.DAL.Context;
 using BuySubs.DAL.Entities;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore;
 namespace BuySubs.BLL.CommandHandlers;
 
 internal sealed class SitesCommandHandlers :
-    IRequestHandler<CreateSiteCommand, IResult>,
-    IRequestHandler<UpdateSiteCommand, IResult>,
-    IRequestHandler<DeleteSiteCommand, IResult>
+    IHttpRequestHandler<CreateSiteCommand>,
+    IHttpRequestHandler<UpdateSiteCommand>,
+    IHttpRequestHandler<DeleteSiteCommand>
 {
     private readonly InternalDbContext _ctx;
 
