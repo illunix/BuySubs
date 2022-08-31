@@ -7,11 +7,12 @@ using BuySubs.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using BuySubs.Common.DTO.Sites;
 using BuySubs.BLL.Interfaces;
+using BuySubs.BLL.Queries.Sites;
 
 namespace BuySubs.BLL.QueryHandlers;
 
 internal class SitesQueryHandlers :
-    IHttpRequestHandler<GetUsersCountQuery>
+    IHttpRequestHandler<GetSitesQuery>
 {
     private readonly InternalDbContext _ctx;
 
@@ -21,7 +22,7 @@ internal class SitesQueryHandlers :
     [HttpGet("sites")]
     [NoValidation]
     public async Task<IResult> Handle(
-        GetUsersCountQuery req,
+        GetSitesQuery req,
         CancellationToken ct
     )
         => Results.Ok(await _ctx.Sites.Select(q => new SiteDTO(
