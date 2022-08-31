@@ -1,97 +1,60 @@
-﻿using Amazon.DynamoDBv2.DataModel;
-using BuySubs.BLL.Commands.Sites;
+﻿using BuySubs.BLL.Commands.Sites;
+using BuySubs.BLL.Exceptions;
+using BuySubs.BLL.Exceptions.Sites;
+using BuySubs.DAL.Context;
+using BuySubs.DAL.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using BuySubs.BLL.Exceptions.Sites;
 using Microsoft.AspNetCore.Mvc;
-using BuySubs.BLL.Exceptions;
-using BuySubs.Common.DTO.Sites;
+using Microsoft.EntityFrameworkCore;
 
 namespace BuySubs.BLL.CommandHandlers;
 
 internal sealed class SitesCommandHandlers :
     IRequestHandler<CreateSiteCommand, IResult>,
-    IRequestHandler<ActivateSiteCommand, IResult>,
-    IRequestHandler<DeactivateSiteCommand, IResult>,
+    IRequestHandler<UpdateSiteCommand, IResult>,
     IRequestHandler<DeleteSiteCommand, IResult>
 {
-    private readonly IDynamoDBContext _ctx;
+    private readonly InternalDbContext _ctx;
 
-    public SitesCommandHandlers(IDynamoDBContext ctx)
-    {
-        _ctx = ctx; 
-    }
+    public SitesCommandHandlers(InternalDbContext ctx)
+        => _ctx = ctx;
 
     [HttpPost("sites")]
-    public async Task<IResult> Handle (
+    public async Task<IResult> Handle(
         CreateSiteCommand req,
         CancellationToken ct
     )
     {
-        if (await _ctx.LoadAsync<SiteWithThisNameAlreadyExistDTO>(req.Name) is not null)
-        {
+        if (await _ctx.Sites.AnyAsync(q => q.Name == req.Name))
             throw new SiteWithThisNameAlreadyExistException();
-        }
 
-        await _ctx.SaveAsync(new CreateSiteDTO
-        {
-            Name = req.Name,
-            IsActive = req.IsActive
+        _ctx.Add(new Site {
+            Name = req.Name, 
+            IsActive = true 
         });
+
+        await _ctx.SaveChangesAsync();
 
         return Results.Ok();
     }
 
-    [HttpPost("sites/activate")]
+    [HttpPut("sites")]
     public async Task<IResult> Handle(
-        ActivateSiteCommand req,
+        UpdateSiteCommand req,
         CancellationToken ct
     )
     {
-        var site = await _ctx.LoadAsync<ActivateSiteDTO>(req.Name);
-
+        var site = await _ctx.Sites.FirstOrDefaultAsync(q => q.Id == req.Id);
         if (site is null)
-        {
-            throw new NotFoundException(nameof(ActivateSiteDTO));
-        }
+            throw new NotFoundException(nameof(Site));
 
-        if (site.IsActive is true)
-        {
-            throw new SiteIsAlreadyActiveException();
-        }
+        site.Name = req.Name;
+        site.IsActive = req.IsActive;
 
-        await _ctx.SaveAsync(new ActivateSiteDTO
-        {
-            Name = req.Name,
-            IsActive = true
-        });
+        _ctx.Update(site);
 
-        return Results.Ok();
-    }
-
-    [HttpPost("sites/deactivate")]
-    public async Task<IResult> Handle(
-        DeactivateSiteCommand req,
-        CancellationToken ct
-    )
-    {
-        var site = await _ctx.LoadAsync<DeactivateSiteDTO>(req.Name);
-
-        if (site is null)
-        {
-            throw new NotFoundException(nameof(DeactivateSiteDTO));
-        }
-
-        if (site.IsActive is false)
-        {
-            throw new SiteIsAlreadyInactiveException();
-        }
-
-        await _ctx.SaveAsync(new DeactivateSiteDTO
-        {
-            Name = req.Name,
-            IsActive = false
-        });
+        await _ctx.SaveChangesAsync();
 
         return Results.Ok();
     }
@@ -102,14 +65,13 @@ internal sealed class SitesCommandHandlers :
         CancellationToken ct
     )
     {
-        var site = await _ctx.LoadAsync<DeleteSiteDTO>(req.Name);
-
+        var site = await _ctx.Sites.FirstOrDefaultAsync(q => q.Id == req.Id);
         if (site is null)
-        {
-            throw new NotFoundException(nameof(DeleteSiteDTO));
-        }
+            throw new NotFoundException(nameof(Site));
 
-        await _ctx.DeleteAsync(site);
+        _ctx.Remove(site);
+
+        await _ctx.SaveChangesAsync();
 
         return Results.Ok();
     }

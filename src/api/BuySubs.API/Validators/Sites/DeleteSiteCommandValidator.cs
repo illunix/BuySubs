@@ -7,7 +7,7 @@ public sealed class DeleteSiteCommandValidator : AbstractValidator<DeleteSiteCom
 {
     public DeleteSiteCommandValidator()
     {
-        RuleFor(q => q.Name)
+        RuleFor(q => q.Id)
             .NotEmpty();
     }
 }

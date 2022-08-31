@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuySubs.API", "BuySubs.API\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuySubs.API.EndpointsGenerator", "BuySubs.API.EndpointsGenerator\BuySubs.API.EndpointsGenerator.csproj", "{1E0CCD2D-9F5F-4BF6-AE23-B65E973ACA0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuySubs.DAL", "BuySubs.DAL\BuySubs.DAL.csproj", "{CC34656D-A650-458E-8CB9-C3C37779D5E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{1E0CCD2D-9F5F-4BF6-AE23-B65E973ACA0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E0CCD2D-9F5F-4BF6-AE23-B65E973ACA0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E0CCD2D-9F5F-4BF6-AE23-B65E973ACA0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC34656D-A650-458E-8CB9-C3C37779D5E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC34656D-A650-458E-8CB9-C3C37779D5E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC34656D-A650-458E-8CB9-C3C37779D5E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC34656D-A650-458E-8CB9-C3C37779D5E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
