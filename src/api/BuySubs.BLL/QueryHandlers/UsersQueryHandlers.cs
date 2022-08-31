@@ -5,28 +5,23 @@ using Microsoft.AspNetCore.Mvc;
 using BuySubs.API.Attributes;
 using BuySubs.DAL.Context;
 using Microsoft.EntityFrameworkCore;
-using BuySubs.Common.DTO.Sites;
 using BuySubs.BLL.Interfaces;
 
 namespace BuySubs.BLL.QueryHandlers;
 
-internal class SitesQueryHandlers :
+internal class UsersQueryHandlers :
     IHttpRequestHandler<GetUsersCountQuery>
 {
     private readonly InternalDbContext _ctx;
 
-    public SitesQueryHandlers(InternalDbContext ctx)
+    public UsersQueryHandlers(InternalDbContext ctx)
         => _ctx = ctx;
 
-    [HttpGet("sites")]
+    [HttpGet("users")]
     [NoValidation]
     public async Task<IResult> Handle(
         GetUsersCountQuery req,
         CancellationToken ct
     )
-        => Results.Ok(await _ctx.Sites.Select(q => new SiteDTO(
-            q.Id,
-            q.Name,
-            q.IsActive
-        )).ToListAsync());
+        => Results.Ok(await _ctx.Users.CountAsync());
 }

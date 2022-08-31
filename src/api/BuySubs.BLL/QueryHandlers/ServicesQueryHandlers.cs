@@ -1,30 +1,29 @@
-﻿using BuySubs.BLL.Queries.Users;
+﻿using BuySubs.API.Attributes;
+using BuySubs.BLL.Queries.Services;
+using BuySubs.Common.DTO.Services;
+using BuySubs.DAL.Context;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using BuySubs.API.Attributes;
-using BuySubs.DAL.Context;
 using Microsoft.EntityFrameworkCore;
-using BuySubs.Common.DTO.Sites;
-using BuySubs.BLL.Interfaces;
 
 namespace BuySubs.BLL.QueryHandlers;
 
-internal class SitesQueryHandlers :
-    IHttpRequestHandler<GetUsersCountQuery>
+internal sealed class ServicesQueryHandlers
+    : IRequestHandler<GetServicesQuery, IResult>
 {
     private readonly InternalDbContext _ctx;
 
-    public SitesQueryHandlers(InternalDbContext ctx)
+    public ServicesQueryHandlers(InternalDbContext ctx)
         => _ctx = ctx;
 
-    [HttpGet("sites")]
+    [HttpGet("services")]
     [NoValidation]
     public async Task<IResult> Handle(
-        GetUsersCountQuery req,
+        GetServicesQuery req,
         CancellationToken ct
     )
-        => Results.Ok(await _ctx.Sites.Select(q => new SiteDTO(
+        => Results.Ok(await _ctx.Services.Select(q => new ServiceDTO(
             q.Id,
             q.Name,
             q.IsActive

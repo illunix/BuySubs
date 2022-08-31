@@ -1,31 +1,29 @@
-﻿using Amazon.DynamoDBv2.DataModel;
-using BuySubs.BLL.Commands.Auth;
+﻿using BuySubs.BLL.Commands.Auth;
 using BuySubs.BLL.Exceptions;
 using BuySubs.BLL.Exceptions.Auth;
-using BuySubs.Common.DTO.Auth;
+using BuySubs.BLL.Interfaces;
 using BuySubs.Common.Options;
 using BuySubs.Common.Security;
-using MediatR;
+using BuySubs.DAL.Context;
+using BuySubs.DAL.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Authentication;
 using System.Security.Claims;
-using System.Text;
 
 namespace BuySubs.BLL.CommandHandlers;
 
 internal sealed class AuthCommandHandlers :
-    IRequestHandler<SignInCommand, IResult>,
-    IRequestHandler<SignUpCommand, IResult>
+    IHttpRequestHandler<SignInCommand>,
+    IHttpRequestHandler<SignUpCommand>
 {
-    private readonly IDynamoDBContext _ctx;
+    private readonly InternalDbContext _ctx;
     private readonly JwtOptions _jwtOptions;
 
     public AuthCommandHandlers(
-        IDynamoDBContext ctx,
+        InternalDbContext ctx,
         IOptions<JwtOptions> jwtOptions
     )
     {
@@ -39,20 +37,19 @@ internal sealed class AuthCommandHandlers :
         CancellationToken ct
     )
     {
-        var user = await _ctx.LoadAsync<UserSignInDTO>(req.Email);
+        var user = await _ctx.Users
+            .Where(q => q.Email == req.Email)
+            .Select(q => new { q.Password, q.Salt })
+            .FirstOrDefaultAsync();
         if (user is null)
-        {
-            throw new NotFoundException(nameof(UserSignInDTO));
-        }
+            throw new NotFoundException(nameof(User));
 
         if (!SecurityHelper.ValidatePassword(
             req.Password,
             user.Password!,
             user.Salt!
         ))
-        {
             throw new InvalidCredentialsException();
-        }
 
         return Results.Ok(new
         {
@@ -63,7 +60,7 @@ internal sealed class AuthCommandHandlers :
                     claims: new Claim[] {
                         new Claim(
                             ClaimTypes.NameIdentifier,
-                            user.Email!
+                            req.Email!
                         ),
                         new Claim(
                             JwtRegisteredClaimNames.Jti,
@@ -85,14 +82,12 @@ internal sealed class AuthCommandHandlers :
         CancellationToken ct
     )
     {
-        if (await _ctx.LoadAsync<UserWithThisEmailAlreadyExistDTO>(req.Email) is not null)
-        {
+        if (await _ctx.Users.AnyAsync(q => q.Email == req.Email))
             throw new UserWithThisEmailAlreadyExistException();
-        }
 
         var salt = SecurityHelper.GetRandomBytes();
 
-        await _ctx.SaveAsync(new UserSignUpDTO
+        _ctx.Add(new User
         {
             Email = req.Email,
             Password = SecurityHelper.HashPassword(
@@ -101,6 +96,8 @@ internal sealed class AuthCommandHandlers :
             ),
             Salt = Convert.ToBase64String(salt)
         });
+
+        await _ctx.SaveChangesAsync();
 
         return Results.Ok();
     }
