@@ -49,10 +49,11 @@ internal sealed class SitesCommandHandlers :
         if (site is null)
             throw new NotFoundException(nameof(Site));
 
-        site.Name = req.Name;
-        site.IsActive = req.IsActive;
-
-        _ctx.Update(site);
+        _ctx.Update(site with
+        {
+            Name = req.Name,
+            IsActive = req.IsActive
+        });
 
         await _ctx.SaveChangesAsync();
 

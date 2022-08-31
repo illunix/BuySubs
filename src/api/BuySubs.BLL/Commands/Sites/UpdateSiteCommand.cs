@@ -2,7 +2,7 @@
 
 namespace BuySubs.BLL.Commands.Sites;
 
-internal readonly record struct UpdateSiteCommand(
+public readonly record struct UpdateSiteCommand(
     Guid Id,
     string Name,
     bool IsActive
