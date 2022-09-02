@@ -20,15 +20,15 @@ internal sealed class AuthCommandHandlers :
     IHttpRequestHandler<SignUpCommand>
 {
     private readonly InternalDbContext _ctx;
-    private readonly JwtOptions _jwtOptions;
+    private readonly IJwtHandler _jwtHandler;
 
     public AuthCommandHandlers(
         InternalDbContext ctx,
-        IOptions<JwtOptions> jwtOptions
+        IJwtHandler jwtHandler
     )
     {
         _ctx = ctx;
-        _jwtOptions = jwtOptions.Value;
+        _jwtHandler = jwtHandler;
     }
 
     [HttpPost("auth/sign-in")]
@@ -53,25 +53,7 @@ internal sealed class AuthCommandHandlers :
 
         return Results.Ok(new
         {
-            access_token = new JwtSecurityTokenHandler().WriteToken(
-                new JwtSecurityToken(
-                    issuer: _jwtOptions.Issuer,
-                    audience: _jwtOptions.Audience,
-                    claims: new Claim[] {
-                        new Claim(
-                            ClaimTypes.NameIdentifier,
-                            req.Email!
-                        ),
-                        new Claim(
-                            JwtRegisteredClaimNames.Jti,
-                            Guid.NewGuid().ToString()   
-                        )
-                    },
-                    notBefore: _jwtOptions.NotBefore,
-                    expires: _jwtOptions.Expiration,
-                    signingCredentials: _jwtOptions.SigningCredentials
-                )
-            ),
+            access_token = _jwtHandler.GetAccessToken(req.Email),
             refresh_token = Convert.ToBase64String(SecurityHelper.GetRandomBytes())
         });
     }
