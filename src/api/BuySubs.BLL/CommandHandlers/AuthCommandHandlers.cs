@@ -62,10 +62,7 @@ internal sealed class AuthCommandHandlers :
         ))
             throw new InvalidCredentialsException();
 
-        return Results.Ok(new TokensDTO(
-            _tokenService.GenerateAccessToken(user.Id),
-            _tokenService.GenerateRefreshToken()
-        ));
+        return Results.Ok(new AccessTokenDTO(_tokenService.GenerateAccessToken(user.Id)));
     }
 
     [HttpPost("auth/sign-up")]
@@ -114,10 +111,7 @@ internal sealed class AuthCommandHandlers :
             refreshToken
         );
 
-        return Results.Ok(new TokensDTO(
-            _tokenService.GenerateAccessToken(req.CurrentUserId),
-            refreshToken
-        ));
+        return Results.Ok(new AccessTokenDTO(_tokenService.GenerateAccessToken(req.CurrentUserId)));
     }
 
     [HttpPost("auth/token/revoke/{string:userId}")]

@@ -44,7 +44,7 @@ services.AddMvcCore(q =>
             SecurityAlgorithms.HmacSha256
         );
     })
-    .AddSingleton<IJwtHandler, JwtHandler>()
+    .AddSingleton<ITokenService, TokenService>()
     .AddAuthorization()
     .AddAuthentication(q =>
     {
