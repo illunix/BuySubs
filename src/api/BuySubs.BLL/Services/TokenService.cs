@@ -1,5 +1,6 @@
 ﻿using BuySubs.BLL.Interfaces;
 using BuySubs.Common.Options;
+using BuySubs.Common.Security;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -11,30 +12,33 @@ using System.Threading.Tasks;
 
 namespace BuySubs.BLL.Services;
 
-internal sealed class JwtHandler : IJwtHandler
+public sealed class TokenService : ITokenService
 {
     private readonly JwtOptions _options;
 
-    public JwtHandler(IOptions<JwtOptions> options)
+    public TokenService(IOptions<JwtOptions> options)
         => _options = options.Value;
 
-    public string GetAccessToken(string email)
+    public string GenerateAccessToken(Guid userId)
         => new JwtSecurityTokenHandler().WriteToken(
                 new JwtSecurityToken(
-                    issuer: _options.Issuer,
-                    audience: _options.Audience,
-                    claims: new Claim[] {
-                        new Claim(
+                    _options.Issuer,
+                    _options.Audience,
+                    new Claim[] {
+                        new(
                             ClaimTypes.NameIdentifier,
-                            email
+                            userId.ToString()
                         ),
-                        new Claim(
+                        new(
                             JwtRegisteredClaimNames.Jti,
                             Guid.NewGuid().ToString()
                         )
                     },
-                    notBefore: _options.NotBefore,
-                    expires: _options.Expiration,
-                    signingCredentials: _options.SigningCredentials
-            ));
+                    _options.NotBefore,
+                    _options.Expiration,
+                    _options.SigningCredentials
+        ));
+
+    public string GenerateRefreshToken()
+        => Convert.ToBase64String(SecurityHelper.GetRandomBytes());
 }

@@ -1,6 +1,8 @@
 using BuySubs.API.Extensions;
 using BuySubs.API.Filters;
 using BuySubs.BLL.Commands.Auth;
+using BuySubs.BLL.Interfaces;
+using BuySubs.BLL.Services;
 using BuySubs.Common.Options;
 using BuySubs.DAL.Context;
 using FluentValidation;
@@ -20,6 +22,8 @@ services.AddMvcCore(q =>
 {
     q.Filters.Add(typeof(CustomExceptionFilterAttribute));
 }).Services
+    .AddEndpointsApiExplorer()
+    .AddSwaggerGen()
     .AddDbContext<InternalDbContext>(q => q.UseNpgsql(configuration["dbConnectionString"]))
     .AddValidatorsFromAssemblyContaining<Program>()
     .AddMediatR(
@@ -30,17 +34,17 @@ services.AddMvcCore(q =>
 #if RELEASE
     .AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 #endif
-    .AddEndpointsApiExplorer()
-    .AddSwaggerGen()
+    .AddEnyimMemcached()
     .Configure<JwtOptions>(q =>
     {
         q.Issuer = configuration["jwt:issuer"];
         q.Audience = configuration["jwt:audience"];
         q.SigningCredentials = new SigningCredentials(
-            signingKey, 
+            signingKey,
             SecurityAlgorithms.HmacSha256
         );
     })
+    .AddSingleton<IJwtHandler, JwtHandler>()
     .AddAuthorization()
     .AddAuthentication(q =>
     {
@@ -96,6 +100,8 @@ app.UseHttpsRedirection();
 app
     .UseAuthentication()
     .UseAuthorization();
+
+app.UseEnyimMemcached();
 
 app.MapEndpoints();
 

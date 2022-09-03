@@ -7,5 +7,5 @@ public sealed record User : EntityBase
     public required string Email { get; set; }
     public required string Password { get; set; }
     public required string Salt { get; set; }
-    public DateTime CreatedAt { get; private set; } = DateTime.Now;
+    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 }

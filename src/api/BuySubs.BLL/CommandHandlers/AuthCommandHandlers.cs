@@ -2,6 +2,7 @@
 using BuySubs.BLL.Exceptions;
 using BuySubs.BLL.Exceptions.Auth;
 using BuySubs.BLL.Interfaces;
+using BuySubs.Common.DTO.Auth;
 using BuySubs.Common.Options;
 using BuySubs.Common.Security;
 using BuySubs.DAL.Context;
@@ -9,6 +10,7 @@ using BuySubs.DAL.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -17,18 +19,23 @@ namespace BuySubs.BLL.CommandHandlers;
 
 internal sealed class AuthCommandHandlers :
     IHttpRequestHandler<SignInCommand>,
-    IHttpRequestHandler<SignUpCommand>
+    IHttpRequestHandler<SignUpCommand>,
+    IHttpRequestHandler<RefreshAccessTokenCommand>,
+    IHttpRequestHandler<RevokeRefreshTokenCommand>
 {
     private readonly InternalDbContext _ctx;
-    private readonly IJwtHandler _jwtHandler;
+    private readonly IDistributedCache _refreshTokensRepo;
+    private readonly ITokenService _tokenService;
 
     public AuthCommandHandlers(
         InternalDbContext ctx,
-        IJwtHandler jwtHandler
+        IDistributedCache refreshTokensRepo,
+        ITokenService tokenService
     )
     {
         _ctx = ctx;
-        _jwtHandler = jwtHandler;
+        _refreshTokensRepo = refreshTokensRepo;
+        _tokenService = tokenService;
     }
 
     [HttpPost("auth/sign-in")]
@@ -39,7 +46,11 @@ internal sealed class AuthCommandHandlers :
     {
         var user = await _ctx.Users
             .Where(q => q.Email == req.Email)
-            .Select(q => new { q.Password, q.Salt })
+            .Select(q => new { 
+                q.Id,
+                q.Password,
+                q.Salt 
+            })
             .FirstOrDefaultAsync();
         if (user is null)
             throw new NotFoundException(nameof(User));
@@ -51,11 +62,10 @@ internal sealed class AuthCommandHandlers :
         ))
             throw new InvalidCredentialsException();
 
-        return Results.Ok(new
-        {
-            access_token = _jwtHandler.GetAccessToken(req.Email),
-            refresh_token = Convert.ToBase64String(SecurityHelper.GetRandomBytes())
-        });
+        return Results.Ok(new TokensDTO(
+            _tokenService.GenerateAccessToken(user.Id),
+            _tokenService.GenerateRefreshToken()
+        ));
     }
 
     [HttpPost("auth/sign-up")]
@@ -65,7 +75,10 @@ internal sealed class AuthCommandHandlers :
     )
     {
         if (await _ctx.Users.AnyAsync(q => q.Email == req.Email))
-            throw new UserWithThisEmailAlreadyExistException();
+            throw new EntityWithSamePropertyValueAlreadyExistException(
+                nameof(User), 
+                nameof(User.Email)
+            );
 
         var salt = SecurityHelper.GetRandomBytes();
 
@@ -80,6 +93,42 @@ internal sealed class AuthCommandHandlers :
         });
 
         await _ctx.SaveChangesAsync();
+
+        return Results.Ok();
+    }
+
+    [HttpPost("auth/token/refresh")]
+    public async Task<IResult> Handle(
+        RefreshAccessTokenCommand req,
+        CancellationToken ct
+    )
+    {
+        var refreshToken = await _refreshTokensRepo.GetStringAsync(req.CurrentUserId.ToString());
+        if (refreshToken is null)
+            throw new InvalidRefreshTokenException();
+
+        refreshToken = _tokenService.GenerateRefreshToken();
+
+        await _refreshTokensRepo.SetStringAsync(
+            req.CurrentUserId.ToString(),
+            refreshToken
+        );
+
+        return Results.Ok(new TokensDTO(
+            _tokenService.GenerateAccessToken(req.CurrentUserId),
+            refreshToken
+        ));
+    }
+
+    [HttpPost("auth/token/revoke/{string:userId}")]
+    public async Task<IResult> Handle(
+        RevokeRefreshTokenCommand req,
+        CancellationToken ct
+    )
+    {
+        var refreshToken = await _refreshTokensRepo.GetStringAsync(req.UserId.ToString());
+        if (refreshToken is null)
+            throw new InvalidRefreshTokenException();
 
         return Results.Ok();
     }
