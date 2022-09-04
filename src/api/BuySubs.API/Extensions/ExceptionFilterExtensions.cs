@@ -23,10 +23,6 @@ internal static class ExceptionFilterExtensions
                 HttpStatusCode.Unauthorized, 
                 ErrorCode.InvalidCredentials
             ),
-            UserWithThisEmailAlreadyExistException _ => (
-                HttpStatusCode.Conflict, 
-                ErrorCode.UserWithThisEmailAlreadyExist
-            ),
             _ => (
                 HttpStatusCode.InternalServerError,
                 ErrorCode.General

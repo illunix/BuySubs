@@ -3,3 +3,4 @@
 namespace BuySubs.BLL.Queries.Services;
 
 public readonly record struct GetServicesQuery : IHttpRequest;
+

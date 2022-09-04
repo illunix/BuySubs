@@ -1,8 +1,9 @@
 ﻿using BuySubs.BLL.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BuySubs.BLL.Commands.Auth;
 
-internal readonly record struct RefreshAccessTokenCommand(
-    Guid CurrentUserId, 
-    string RefreshToken
-) : IHttpRequest;
+public readonly record struct RefreshAccessTokenCommand(string RefreshToken) : IHttpRequest
+{
+    public string? CurrentUserId { get; init; }
+}

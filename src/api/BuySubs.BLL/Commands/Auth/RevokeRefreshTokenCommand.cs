@@ -2,4 +2,5 @@
 
 namespace BuySubs.BLL.Commands.Auth;
 
-internal readonly record struct RevokeRefreshTokenCommand(Guid UserId) : IHttpRequest;
+internal readonly record struct RevokeRefreshTokenCommand(string CurrentUserId) : IHttpRequest;
+

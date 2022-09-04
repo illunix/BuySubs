@@ -1,4 +1,5 @@
-﻿using BuySubs.BLL.Commands.Auth;
+﻿using BuySubs.API.Attributes;
+using BuySubs.BLL.Commands.Auth;
 using BuySubs.BLL.Exceptions;
 using BuySubs.BLL.Exceptions.Auth;
 using BuySubs.BLL.Interfaces;
@@ -52,17 +53,22 @@ internal sealed class AuthCommandHandlers :
                 q.Salt 
             })
             .FirstOrDefaultAsync();
-        if (user is null)
-            throw new NotFoundException(nameof(User));
-
-        if (!SecurityHelper.ValidatePassword(
-            req.Password,
-            user.Password!,
-            user.Salt!
-        ))
+        if (
+            user is null ||
+            !SecurityHelper.ValidatePassword(
+                req.Password,
+                user.Password!,
+                user.Salt!
+            )
+        )
             throw new InvalidCredentialsException();
 
-        return Results.Ok(new AccessTokenDTO(_tokenService.GenerateAccessToken(user.Id)));
+        await _refreshTokensRepo.SetStringAsync(
+            user.Id.ToString(), 
+            _tokenService.GenerateRefreshToken()
+        );
+
+        return Results.Ok(new AccessTokenDTO(_tokenService.GenerateAccessToken(user.Id.ToString())));
     }
 
     [HttpPost("auth/sign-up")]
@@ -95,34 +101,37 @@ internal sealed class AuthCommandHandlers :
     }
 
     [HttpPost("auth/token/refresh")]
+    [NoValidation]
     public async Task<IResult> Handle(
         RefreshAccessTokenCommand req,
         CancellationToken ct
     )
     {
-        var refreshToken = await _refreshTokensRepo.GetStringAsync(req.CurrentUserId.ToString());
+        var refreshToken = await _refreshTokensRepo.GetStringAsync(req.CurrentUserId!);
         if (refreshToken is null)
             throw new InvalidRefreshTokenException();
 
         refreshToken = _tokenService.GenerateRefreshToken();
 
         await _refreshTokensRepo.SetStringAsync(
-            req.CurrentUserId.ToString(),
+            req.CurrentUserId!.ToString(),
             refreshToken
         );
 
-        return Results.Ok(new AccessTokenDTO(_tokenService.GenerateAccessToken(req.CurrentUserId)));
+        return Results.Ok(req.CurrentUserId);
     }
 
-    [HttpPost("auth/token/revoke/{string:userId}")]
+    [HttpPost("auth/token/revoke")]
     public async Task<IResult> Handle(
         RevokeRefreshTokenCommand req,
         CancellationToken ct
     )
     {
-        var refreshToken = await _refreshTokensRepo.GetStringAsync(req.UserId.ToString());
+        var refreshToken = await _refreshTokensRepo.GetStringAsync(req.CurrentUserId!.ToString());
         if (refreshToken is null)
             throw new InvalidRefreshTokenException();
+
+        await _refreshTokensRepo.RemoveAsync(req.CurrentUserId!.ToString());
 
         return Results.Ok();
     }
