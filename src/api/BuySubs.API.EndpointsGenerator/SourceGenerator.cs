@@ -32,7 +32,8 @@ internal class SourceGenerator : ISourceGenerator
         var extensions = new StringBuilder();
 
         extensions.AppendLine(
-@$"using Microsoft.AspNetCore.Builder;
+@$"using System.Security.Claims;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
@@ -152,14 +153,16 @@ public class NoValidationAttribute : Attribute { }"
 
             var route = httpAttr.ConstructorArguments.FirstOrDefault().Value;
 
+            var getCurrentUser = requestTypeType.GetMembers().Any(q => q.Name == "CurrentUserId");
+
             sb.AppendLine(
 @$"app.Map{httpMethod}(
             ""{route}"",
             async (
-                [AsParameters] {requestTypeType} req,
+                {(getCurrentUser ? "ClaimsPrincipal user,\n\t\t\t\t" : "")}[AsParameters] {requestTypeType} req,
                 IMediator mediator
             )
-                => await mediator.Send(req)
+                => await mediator.Send(req{(getCurrentUser ? @" with { CurrentUserId = user.Claims.FirstOrDefault(q => q.Type == ClaimTypes.NameIdentifier).Value}" : "")})
             ){(hasNoValidateAttr ? ";" : $".AddEndpointFilter<ValidationFilter<{requestTypeType}>>();")}"
             );
         }
