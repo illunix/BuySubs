@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.2.0" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.22.0" />
+    <PackageReference Include="NetFabric.Hyperlinq" Version="3.0.0-beta48" />
     <PackageReference Include="Riok.Mapperly" Version="2.3.4-next.4" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.22.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0-preview.4.22224.3" />
