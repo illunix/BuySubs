@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BuySubs.Common.DTO.Sites;
 using BuySubs.BLL.Interfaces;
 using BuySubs.BLL.Queries.Sites;
+using BuySubs.BLL.Mappings;
 
 namespace BuySubs.BLL.QueryHandlers;
 
@@ -15,9 +16,16 @@ internal class SitesQueryHandlers :
     IHttpRequestHandler<GetSitesQuery>
 {
     private readonly InternalDbContext _ctx;
+    private readonly SiteMapper _mapper;
 
-    public SitesQueryHandlers(InternalDbContext ctx)
-        => _ctx = ctx;
+    public SitesQueryHandlers(
+        InternalDbContext ctx,
+        SiteMapper mapper
+    )
+    {
+        _ctx = ctx;
+        _mapper = mapper;
+    }
 
     [HttpGet("sites")]
     [NoValidation]
@@ -25,9 +33,5 @@ internal class SitesQueryHandlers :
         GetSitesQuery req,
         CancellationToken ct
     )
-        => Results.Ok(await _ctx.Sites.Select(q => new SiteDTO(
-            q.Id,
-            q.Name,
-            q.IsActive
-        )).ToListAsync());
+        => Results.Ok(_mapper.AdaptToDto(await _ctx.Sites.ToListAsync()));
 }

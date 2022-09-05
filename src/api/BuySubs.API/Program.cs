@@ -1,13 +1,16 @@
 using BuySubs.API.Extensions;
 using BuySubs.API.Filters;
 using BuySubs.BLL.Commands.Auth;
+using BuySubs.BLL.Mappings;
 using BuySubs.Common.Options;
 using BuySubs.DAL.Context;
+using BuySubs.DAL.Entities;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Riok.Mapperly.Abstractions;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +29,7 @@ services.AddMvcCore(q =>
         q => q.AsScoped(),
         typeof(SignUpCommand)
     )
+    .AddMappers()
     .AddDefaultAWSOptions(configuration.GetAWSOptions())
 #if RELEASE
     .AddAWSLambdaHosting(LambdaEventSource.HttpApi);
@@ -82,6 +86,7 @@ services.AddMvcCore(q =>
             }
         };
     });
+
 
 var app = builder.Build();
 

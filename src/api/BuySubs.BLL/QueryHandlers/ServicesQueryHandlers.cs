@@ -6,6 +6,7 @@ using BuySubs.BLL.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using BuySubs.BLL.Mappings;
 
 namespace BuySubs.BLL.QueryHandlers;
 
@@ -13,9 +14,16 @@ internal sealed class ServicesQueryHandlers
     : IHttpRequestHandler<GetServicesQuery>
 {
     private readonly InternalDbContext _ctx;
+    private readonly ServiceMapper _mapper;
 
-    public ServicesQueryHandlers(InternalDbContext ctx)
-        => _ctx = ctx;
+    public ServicesQueryHandlers(
+        InternalDbContext ctx,
+        ServiceMapper mapper
+    )
+    {
+        _ctx = ctx;
+        _mapper = mapper;
+    }
 
     [HttpGet("services")]
     [NoValidation]
@@ -23,9 +31,5 @@ internal sealed class ServicesQueryHandlers
         GetServicesQuery req,
         CancellationToken ct
     )
-        => Results.Ok(await _ctx.Services.Select(q => new ServiceDTO(
-            q.Id,
-            q.Name,
-            q.IsActive
-        )).ToListAsync());
+        => Results.Ok(new ServiceMapper().AdaptToDto(await _ctx.Services.ToListAsync()));
 }
