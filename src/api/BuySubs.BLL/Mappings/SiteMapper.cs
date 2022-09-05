@@ -6,7 +6,7 @@ using Riok.Mapperly.Abstractions;
 namespace BuySubs.BLL.Mappings;
 
 [Mapper]
-internal sealed partial class SiteMapper
+public sealed partial class SiteMapper
 {
     public partial IEnumerable<SiteDTO> AdaptToDto(IEnumerable<Site> site);
     public partial Site AdaptToEntity(CreateSiteCommand req);

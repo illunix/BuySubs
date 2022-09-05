@@ -2,4 +2,4 @@
 
 namespace BuySubs.BLL.Queries.Sites;
 
-internal readonly record struct GetSitesQuery : IHttpRequest;
+public readonly record struct GetSitesQuery : IHttpRequest;

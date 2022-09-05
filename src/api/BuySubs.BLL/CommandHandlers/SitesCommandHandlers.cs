@@ -11,22 +11,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BuySubs.BLL.CommandHandlers;
 
-internal sealed class SitesCommandHandlers :
+public sealed partial class SitesCommandHandlers :
     IHttpRequestHandler<CreateSiteCommand>,
     IHttpRequestHandler<UpdateSiteCommand>,
     IHttpRequestHandler<DeleteSiteCommand>
 {
     private readonly InternalDbContext _ctx;
     private readonly SiteMapper _mapper;
-
-    public SitesCommandHandlers(
-        InternalDbContext ctx,
-        SiteMapper mapper
-    )
-    {
-        _ctx = ctx;
-        _mapper = mapper;
-    }
 
     [HttpPost("sites")]
     public async Task<IResult> Handle(

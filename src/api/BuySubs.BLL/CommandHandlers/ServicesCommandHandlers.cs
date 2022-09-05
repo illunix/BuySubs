@@ -11,21 +11,12 @@ using BuySubs.BLL.Mappings;
 
 namespace BuySubs.BLL.CommandHandlers;
 
-internal sealed class ServicesCommandHandlers :
+public sealed partial class ServicesCommandHandlers :
     IHttpRequestHandler<CreateServiceCommand>,
     IHttpRequestHandler<UpdateServiceCommand>
 {
     private readonly InternalDbContext _ctx;
     private readonly ServiceMapper _mapper;
-
-    public ServicesCommandHandlers(
-        InternalDbContext ctx,
-        ServiceMapper mapper
-    )
-    {
-        _ctx = ctx;
-        _mapper = mapper;
-    }
 
     [HttpPost("services")]
     public async Task<IResult> Handle(

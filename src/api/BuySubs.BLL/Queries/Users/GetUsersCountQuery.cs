@@ -2,4 +2,4 @@
 
 namespace BuySubs.BLL.Queries.Users;
 
-internal readonly record struct GetUsersCountQuery : IHttpRequest;
+public readonly record struct GetUsersCountQuery : IHttpRequest;

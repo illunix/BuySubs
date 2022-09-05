@@ -9,13 +9,10 @@ using BuySubs.BLL.Interfaces;
 
 namespace BuySubs.BLL.QueryHandlers;
 
-internal class UsersQueryHandlers :
+public sealed partial class UsersQueryHandlers :
     IHttpRequestHandler<GetUsersCountQuery>
 {
     private readonly InternalDbContext _ctx;
-
-    public UsersQueryHandlers(InternalDbContext ctx)
-        => _ctx = ctx;
 
     [HttpGet("users/count")]
     [NoValidation]

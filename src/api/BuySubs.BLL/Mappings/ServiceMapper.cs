@@ -6,7 +6,7 @@ using Riok.Mapperly.Abstractions;
 namespace BuySubs.BLL.Mappings;
 
 [Mapper]
-internal sealed partial class ServiceMapper
+public sealed partial class ServiceMapper
 {
     public partial IEnumerable<ServiceDTO> AdaptToDto(IEnumerable<Service> service);
     public partial Service AdaptToEntity(CreateServiceCommand req);

@@ -12,20 +12,11 @@ using BuySubs.BLL.Mappings;
 
 namespace BuySubs.BLL.QueryHandlers;
 
-internal sealed class SitesQueryHandlers :
+public sealed partial class SitesQueryHandlers :
     IHttpRequestHandler<GetSitesQuery>
 {
     private readonly InternalDbContext _ctx;
     private readonly SiteMapper _mapper;
-
-    public SitesQueryHandlers(
-        InternalDbContext ctx,
-        SiteMapper mapper
-    )
-    {
-        _ctx = ctx;
-        _mapper = mapper;
-    }
 
     [HttpGet("sites")]
     [NoValidation]

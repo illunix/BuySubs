@@ -10,20 +10,11 @@ using BuySubs.BLL.Mappings;
 
 namespace BuySubs.BLL.QueryHandlers;
 
-internal sealed class ServicesQueryHandlers
+public sealed partial class ServicesQueryHandlers
     : IHttpRequestHandler<GetServicesQuery>
 {
     private readonly InternalDbContext _ctx;
     private readonly ServiceMapper _mapper;
-
-    public ServicesQueryHandlers(
-        InternalDbContext ctx,
-        ServiceMapper mapper
-    )
-    {
-        _ctx = ctx;
-        _mapper = mapper;
-    }
 
     [HttpGet("services")]
     [NoValidation]

@@ -15,21 +15,12 @@ using System.Security.Claims;
 
 namespace BuySubs.BLL.CommandHandlers;
 
-internal sealed class AuthCommandHandlers :
+public sealed partial class AuthCommandHandlers :
     IHttpRequestHandler<SignInCommand>,
     IHttpRequestHandler<SignUpCommand>
 {
     private readonly InternalDbContext _ctx;
-    private readonly JwtOptions _jwtOptions;
-
-    public AuthCommandHandlers(
-        InternalDbContext ctx,
-        IOptions<JwtOptions> jwtOptions
-    )
-    {
-        _ctx = ctx;
-        _jwtOptions = jwtOptions.Value;
-    }
+    private readonly IOptions<JwtOptions> _jwtOptions;
 
     [HttpPost("auth/sign-in")]
     public async Task<IResult> Handle(
@@ -55,8 +46,8 @@ internal sealed class AuthCommandHandlers :
         {
             access_token = new JwtSecurityTokenHandler().WriteToken(
                 new JwtSecurityToken(
-                    issuer: _jwtOptions.Issuer,
-                    audience: _jwtOptions.Audience,
+                    issuer: _jwtOptions.Value.Issuer,
+                    audience: _jwtOptions.Value.Audience,
                     claims: new Claim[] {
                         new Claim(
                             ClaimTypes.NameIdentifier,
@@ -67,9 +58,9 @@ internal sealed class AuthCommandHandlers :
                             Guid.NewGuid().ToString()   
                         )
                     },
-                    notBefore: _jwtOptions.NotBefore,
-                    expires: _jwtOptions.Expiration,
-                    signingCredentials: _jwtOptions.SigningCredentials
+                    notBefore: _jwtOptions.Value.NotBefore,
+                    expires: _jwtOptions.Value.Expiration,
+                    signingCredentials: _jwtOptions.Value.SigningCredentials
                 )
             ),
             refresh_token = Convert.ToBase64String(SecurityHelper.GetRandomBytes())
