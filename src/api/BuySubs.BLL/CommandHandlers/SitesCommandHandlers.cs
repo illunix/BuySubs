@@ -2,6 +2,7 @@
 using BuySubs.BLL.Exceptions;
 using BuySubs.BLL.Exceptions.Sites;
 using BuySubs.BLL.Interfaces;
+using BuySubs.BLL.Mappings;
 using BuySubs.DAL.Context;
 using BuySubs.DAL.Entities;
 using Microsoft.AspNetCore.Http;
@@ -16,9 +17,16 @@ internal sealed class SitesCommandHandlers :
     IHttpRequestHandler<DeleteSiteCommand>
 {
     private readonly InternalDbContext _ctx;
+    private readonly SiteMapper _mapper;
 
-    public SitesCommandHandlers(InternalDbContext ctx)
-        => _ctx = ctx;
+    public SitesCommandHandlers(
+        InternalDbContext ctx,
+        SiteMapper mapper
+    )
+    {
+        _ctx = ctx;
+        _mapper = mapper;
+    }
 
     [HttpPost("sites")]
     public async Task<IResult> Handle(
@@ -29,10 +37,7 @@ internal sealed class SitesCommandHandlers :
         if (await _ctx.Sites.AnyAsync(q => q.Name == req.Name))
             throw new SiteWithThisNameAlreadyExistException();
 
-        _ctx.Add(new Site {
-            Name = req.Name, 
-            IsActive = true 
-        });
+        _ctx.Add(_mapper.AdaptToEntity(req));
 
         await _ctx.SaveChangesAsync();
 
@@ -49,11 +54,7 @@ internal sealed class SitesCommandHandlers :
         if (site is null)
             throw new NotFoundException(nameof(Site));
 
-        _ctx.Update(site with
-        {
-            Name = req.Name,
-            IsActive = req.IsActive
-        });
+        _ctx.Update(_mapper.AdaptToEntity(req));
 
         await _ctx.SaveChangesAsync();
 

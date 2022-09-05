@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using BuySubs.BLL.Mappings;
 
 namespace BuySubs.BLL.CommandHandlers;
 
@@ -15,9 +16,16 @@ internal sealed class ServicesCommandHandlers :
     IHttpRequestHandler<UpdateServiceCommand>
 {
     private readonly InternalDbContext _ctx;
+    private readonly ServiceMapper _mapper;
 
-    public ServicesCommandHandlers(InternalDbContext ctx)
-        => _ctx = ctx;
+    public ServicesCommandHandlers(
+        InternalDbContext ctx,
+        ServiceMapper mapper
+    )
+    {
+        _ctx = ctx;
+        _mapper = mapper;
+    }
 
     [HttpPost("services")]
     public async Task<IResult> Handle(
@@ -31,12 +39,7 @@ internal sealed class ServicesCommandHandlers :
                 nameof(Service.Name)
             );
 
-        _ctx.Add(new Service
-        {
-            Name = req.Name,
-            Price = req.Price,
-            Description = req.Description,
-        });
+        _ctx.Add(_mapper.AdaptToEntity(req));
 
         await _ctx.SaveChangesAsync();
 
@@ -59,13 +62,7 @@ internal sealed class ServicesCommandHandlers :
                 nameof(Service.Name)
             );
 
-        _ctx.Update(service with
-        {
-            Name = req.Name,
-            Description = req.Description,
-            Price = req.Price,
-            IsActive = req.IsActive
-        });
+        _ctx.Update(_mapper.AdaptToEntity(req));
 
         await _ctx.SaveChangesAsync();
 

@@ -12,7 +12,7 @@ using BuySubs.BLL.Mappings;
 
 namespace BuySubs.BLL.QueryHandlers;
 
-internal class SitesQueryHandlers :
+internal sealed class SitesQueryHandlers :
     IHttpRequestHandler<GetSitesQuery>
 {
     private readonly InternalDbContext _ctx;
