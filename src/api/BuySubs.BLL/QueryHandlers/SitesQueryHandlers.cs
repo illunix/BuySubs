@@ -2,7 +2,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using BuySubs.API.Attributes;
 using BuySubs.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using BuySubs.Common.DTO.Sites;
@@ -19,7 +18,6 @@ public sealed partial class SitesQueryHandlers :
     private readonly SiteMapper _mapper;
 
     [HttpGet("sites")]
-    [NoValidation]
     public async Task<IResult> Handle(
         GetSitesQuery req,
         CancellationToken ct

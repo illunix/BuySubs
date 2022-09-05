@@ -111,24 +111,6 @@ internal class ValidationFilter<T> : IEndpointFilter
                 Encoding.UTF8
             )
         );
-
-        var attributes = new StringBuilder();
-
-        attributes.AppendLine(
-@"using System;
-
-namespace BuySubs.API.Attributes;
-
-[AttributeUsage(AttributeTargets.Method)]  
-public class NoValidationAttribute : Attribute { }"
-        );
-        ctx.AddSource(
-            "BuySubs.API.Attributes.g.cs",
-            SourceText.From(
-                attributes.ToString(),
-                Encoding.UTF8
-            )
-        );
     }
 
     private static string GenerateEndpoints(IEnumerable<IMethodSymbol> methods)
@@ -147,9 +129,9 @@ public class NoValidationAttribute : Attribute { }"
                     "Attribute",
                     ""
                 );
-            var hasNoValidateAttr = method.GetAttributes().Where(q => q.AttributeClass!.Name.StartsWith("No")).Any();
             var requestType = method.Parameters.FirstOrDefault()!;
             var requestTypeType = requestType.Type;
+            var validate = requestTypeType.GetMembers().Any();
 
             var route = httpAttr.ConstructorArguments.FirstOrDefault().Value;
 
@@ -163,7 +145,7 @@ public class NoValidationAttribute : Attribute { }"
                 IMediator mediator
             )
                 => await mediator.Send(req{(getCurrentUser ? @" with { CurrentUserId = user.Claims.FirstOrDefault(q => q.Type == ClaimTypes.NameIdentifier).Value}" : "")})
-            ){(hasNoValidateAttr ? ";" : $".AddEndpointFilter<ValidationFilter<{requestTypeType}>>();")}"
+            ){(validate ? ";" : $".AddEndpointFilter<ValidationFilter<{requestTypeType}>>();")}"
             );
         }
 

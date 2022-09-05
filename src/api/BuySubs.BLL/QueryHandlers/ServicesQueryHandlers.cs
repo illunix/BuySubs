@@ -1,5 +1,4 @@
-﻿using BuySubs.API.Attributes;
-using BuySubs.BLL.Queries.Services;
+﻿using BuySubs.BLL.Queries.Services;
 using BuySubs.Common.DTO.Services;
 using BuySubs.DAL.Context;
 using BuySubs.BLL.Interfaces;
@@ -17,7 +16,6 @@ public sealed partial class ServicesQueryHandlers
     private readonly ServiceMapper _mapper;
 
     [HttpGet("services")]
-    [NoValidation]
     public async Task<IResult> Handle(
         GetServicesQuery req,
         CancellationToken ct
