@@ -17,7 +17,7 @@ internal class UsersQueryHandlers :
     public UsersQueryHandlers(InternalDbContext ctx)
         => _ctx = ctx;
 
-    [HttpGet("users")]
+    [HttpGet("users/count")]
     [NoValidation]
     public async Task<IResult> Handle(
         GetUsersCountQuery req,
