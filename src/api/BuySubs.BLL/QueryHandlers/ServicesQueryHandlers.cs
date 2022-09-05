@@ -31,5 +31,5 @@ internal sealed class ServicesQueryHandlers
         GetServicesQuery req,
         CancellationToken ct
     )
-        => Results.Ok(new ServiceMapper().AdaptToDto(await _ctx.Services.ToListAsync()));
+        => Results.Ok(_mapper.AdaptToDto(await _ctx.Services.ToListAsync()));
 }
