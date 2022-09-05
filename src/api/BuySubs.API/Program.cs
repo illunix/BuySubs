@@ -8,21 +8,19 @@ using BuySubs.DAL.Entities;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Riok.Mapperly.Abstractions;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-var services = builder.Services;
 var configuration = builder.Configuration;
 
 var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["jwt:secretKey"]!));
 
-services.AddMvcCore(q =>
-{
-    q.Filters.Add(typeof(CustomExceptionFilterAttribute));
-}).Services
+builder.Services
     .AddDbContext<InternalDbContext>(q => q.UseNpgsql(configuration["dbConnectionString"]))
     .AddValidatorsFromAssemblyContaining<Program>()
     .AddMediatR(
@@ -103,5 +101,28 @@ app
     .UseAuthorization();
 
 app.MapEndpoints();
+
+app.UseExceptionHandler(q =>
+{
+    q.Run(async ctx =>
+    {
+        var exceptionHandlerPathFeature = ctx.Features.Get<IExceptionHandlerPathFeature>();
+        var exception = exceptionHandlerPathFeature!.Error;
+
+        var (
+            statusCode,
+            errorCode
+        ) = exception.ParseException();
+
+        ctx.Response.ContentType = "application/json";
+        ctx.Response.StatusCode = (int)statusCode;
+
+        await ctx.Response.WriteAsJsonAsync(new
+        {
+            error = exception.Message,
+            code = errorCode
+        });
+    });
+});
 
 app.Run();
