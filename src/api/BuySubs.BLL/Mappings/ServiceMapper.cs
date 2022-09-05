@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace BuySubs.BLL.Mappings;
 
 [Mapper]
-public partial class ServiceMapper
+internal sealed partial class ServiceMapper
 {
     public partial IEnumerable<ServiceDTO> AdaptToDto(IEnumerable<Service> service);
 }
