@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BuySubs.API.EndpointsGenerator\BuySubs.API.EndpointsGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+    <ProjectReference Include="..\BuySubs.API.EndpointsGenerator\BuySubs.API.CodeGeneration.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
     <ProjectReference Include="..\BuySubs.BLL.Interfaces\BuySubs.BLL.Interfaces.csproj" />
     <ProjectReference Include="..\BuySubs.Common\BuySubs.Common.csproj" />
     <ProjectReference Include="..\BuySubs.DAL\BuySubs.DAL.csproj" />
