@@ -29,9 +29,67 @@ internal class SourceGenerator : ISourceGenerator
             syntaxReceiver
         );
 
-        var extensions = new StringBuilder();
+        ctx.AddSource(
+            "BuySubs.API.Extensions.g.cs",
+            SourceText.From(
+                GenerateExtensions(methods),
+                Encoding.UTF8
+            )
+        );
+       
+        ctx.AddSource(
+            "BuySubs.API.Filters.g.cs",
+            SourceText.From(
+                GenerateValidationFilter(),
+                Encoding.UTF8
+            )
+        );
+    }
 
-        extensions.AppendLine(
+    private static string GenerateExtensions(IEnumerable<IMethodSymbol> methods)
+    {
+        var generateMethods = () =>
+        {
+            var sb = new StringBuilder();
+
+            foreach (var method in methods)
+            {
+                var httpAttr = method.GetAttributes().Where(q => q.AttributeClass!.Name.StartsWith("Http")).FirstOrDefault()!;
+                var httpMethod = httpAttr.AttributeClass?.Name
+                    .Replace(
+                        "Http",
+                        ""
+                    )
+                    .Replace(
+                        "Attribute",
+                        ""
+                    );
+                var requestType = method.Parameters.FirstOrDefault()!;
+                var requestTypeType = requestType.Type;
+                var validate = requestTypeType.GetMembers().Any();
+
+                var route = httpAttr.ConstructorArguments.FirstOrDefault().Value;
+
+                var getCurrentUser = requestTypeType.GetMembers().Any(q => q.Name == "CurrentUserId");
+
+                sb.AppendLine(
+    @$"app.Map{httpMethod}(
+            ""{route}"",
+            async (
+                {(getCurrentUser ? "ClaimsPrincipal user,\n\t\t\t\t" : "")}[AsParameters] {requestTypeType} req,
+                IMediator mediator
+            )
+                => await mediator.Send(req{(getCurrentUser ? @" with { CurrentUserId = user.Claims.FirstOrDefault(q => q.Type == ClaimTypes.NameIdentifier).Value}" : "")})
+            ){(validate ? ";" : $".AddEndpointFilter<ValidationFilter<{requestTypeType}>>();")}"
+                );
+            }
+
+            return sb.ToString();
+        };
+
+        var sb = new StringBuilder();
+
+        sb.AppendLine(
 @$"using System.Security.Claims;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -45,24 +103,21 @@ public static class ApiExtensions
 {{
     public static WebApplication MapEndpoints(this WebApplication app)
     {{
-        {GenerateEndpoints(methods)}
+        {generateMethods()}
         return app;
     }}
 }}
 "
         );
 
-        ctx.AddSource(
-            "BuySubs.API.Extensions.g.cs",
-            SourceText.From(
-                extensions.ToString(),
-                Encoding.UTF8
-            )
-        );
+        return sb.ToString();
+    }
 
-        var filters = new StringBuilder();
+    private static string GenerateValidationFilter()
+    {
+        var sb = new StringBuilder();
 
-        filters.AppendLine(
+        sb.AppendLine(
 @"using FluentValidation;
 using Microsoft.AspNetCore.Http;
 
@@ -103,51 +158,7 @@ internal class ValidationFilter<T> : IEndpointFilter
         return await next(ctx);
     }
 }"
-        );
-        ctx.AddSource(
-            "BuySubs.API.Filters.g.cs",
-            SourceText.From(
-                filters.ToString(),
-                Encoding.UTF8
-            )
-        );
-    }
-
-    private static string GenerateEndpoints(IEnumerable<IMethodSymbol> methods)
-    {
-        var sb = new StringBuilder();
-
-        foreach (var method in methods)
-        {
-            var httpAttr = method.GetAttributes().Where(q => q.AttributeClass!.Name.StartsWith("Http")).FirstOrDefault()!;
-            var httpMethod = httpAttr.AttributeClass?.Name
-                .Replace(
-                    "Http",
-                    ""
-                )
-                .Replace(
-                    "Attribute",
-                    ""
-                );
-            var requestType = method.Parameters.FirstOrDefault()!;
-            var requestTypeType = requestType.Type;
-            var validate = requestTypeType.GetMembers().Any();
-
-            var route = httpAttr.ConstructorArguments.FirstOrDefault().Value;
-
-            var getCurrentUser = requestTypeType.GetMembers().Any(q => q.Name == "CurrentUserId");
-
-            sb.AppendLine(
-@$"app.Map{httpMethod}(
-            ""{route}"",
-            async (
-                {(getCurrentUser ? "ClaimsPrincipal user,\n\t\t\t\t" : "")}[AsParameters] {requestTypeType} req,
-                IMediator mediator
-            )
-                => await mediator.Send(req{(getCurrentUser ? @" with { CurrentUserId = user.Claims.FirstOrDefault(q => q.Type == ClaimTypes.NameIdentifier).Value}" : "")})
-            ){(validate ? ";" : $".AddEndpointFilter<ValidationFilter<{requestTypeType}>>();")}"
-            );
-        }
+    );
 
         return sb.ToString();
     }
