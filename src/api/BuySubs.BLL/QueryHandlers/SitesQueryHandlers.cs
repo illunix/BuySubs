@@ -22,5 +22,8 @@ public sealed partial class SitesQueryHandlers :
         GetSitesQuery req,
         CancellationToken ct
     )
-        => Results.Ok(_mapper.AdaptToDto(await _ctx.Sites.ToListAsync()));
+        => Results.Ok(_mapper.AdaptToDto(await _ctx.Sites
+            .AsNoTracking()
+            .ToListAsync()
+        ));
 }

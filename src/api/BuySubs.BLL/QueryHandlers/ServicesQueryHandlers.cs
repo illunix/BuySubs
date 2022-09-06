@@ -20,5 +20,8 @@ public sealed partial class ServicesQueryHandlers
         GetServicesQuery req,
         CancellationToken ct
     )
-        => Results.Ok(_mapper.AdaptToDto(await _ctx.Services.ToListAsync()));
+        => Results.Ok(_mapper.AdaptToDto(await _ctx.Services
+            .AsNoTracking()
+            .ToListAsync()
+        ));
 }
