@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Riok.Mapperly.Abstractions;
+using Serilog;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -85,6 +86,13 @@ builder.Services
         };
     });
 
+
+builder.Logging
+    .ClearProviders()
+    .AddSerilog(new LoggerConfiguration()
+        .WriteTo.Console()
+        .CreateLogger()
+    );
 
 var app = builder.Build();
 
