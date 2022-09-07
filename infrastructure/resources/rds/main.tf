@@ -29,13 +29,14 @@ resource "aws_rds_cluster" "main" {
 }
 
 resource "aws_rds_cluster_instance" "main" {
-  count               = 1
-  cluster_identifier  = aws_rds_cluster.main.id
-  instance_class      = "db.serverless"
-  engine              = aws_rds_cluster.main.engine
-  engine_version      = aws_rds_cluster.main.engine_version
-  publicly_accessible = true
-  db_subnet_group_name = aws_rds_cluster.main.db_subnet_group_name
+  count                        = 1
+  cluster_identifier           = aws_rds_cluster.main.id
+  instance_class               = "db.serverless"
+  engine                       = aws_rds_cluster.main.engine
+  engine_version               = aws_rds_cluster.main.engine_version
+  publicly_accessible          = true
+  db_subnet_group_name         = aws_rds_cluster.main.db_subnet_group_name
+  performance_insights_enabled = false
 }
 
 resource "aws_db_subnet_group" "main" {
