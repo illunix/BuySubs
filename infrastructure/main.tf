@@ -7,9 +7,5 @@ provider "aws" {
 }
 
 module "rds" {
-  source = "./resources/rds"
-}
-
-module "vpc" {
-  source = "./resources/vpc"  
+  source = "./resources/rds"  
 }
