@@ -7,5 +7,5 @@ provider "aws" {
 }
 
 module "rds" {
-  source = "./resources/rds"  
+  source = "./resources/rds"
 }

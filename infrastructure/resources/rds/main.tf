@@ -7,11 +7,11 @@ provider "aws" {
 }
 
 module "vpc" {
-  source = "../vpc"  
+  source = "../vpc"
 }
 
 resource "aws_rds_cluster" "main" {
-  serverlessv2_scaling_configuration  {
+  serverlessv2_scaling_configuration {
     min_capacity = 2
     max_capacity = 4
   }
@@ -21,18 +21,23 @@ resource "aws_rds_cluster" "main" {
   database_name           = "BuySubs"
   master_username         = "foo"
   master_password         = "baregeogoevne"
-  vpc_security_group_ids = [module.vpc.aws_security_group_allow_all_id]
-  db_subnet_group_name   = aws_db_subnet_group.main.id
+  vpc_security_group_ids  = [module.vpc.aws_security_group_allow_all_id]
+  db_subnet_group_name    = aws_db_subnet_group.main.id
+  skip_final_snapshot     = true
+  backup_retention_period = 0
+  apply_immediately       = true
 }
 
 resource "aws_rds_cluster_instance" "main" {
-  count              = 1
-  cluster_identifier = aws_rds_cluster.main.id
-  instance_class     = "db.serverless"
-  engine             = aws_rds_cluster.main.engine
-  engine_version     = aws_rds_cluster.main.engine_version
+  count               = 1
+  cluster_identifier  = aws_rds_cluster.main.id
+  instance_class      = "db.serverless"
+  engine              = aws_rds_cluster.main.engine
+  engine_version      = aws_rds_cluster.main.engine_version
+  publicly_accessible = true
+  db_subnet_group_name = aws_rds_cluster.main.db_subnet_group_name
 }
 
 resource "aws_db_subnet_group" "main" {
-  subnet_ids  = [module.vpc.aws_subnet_main_id, module.vpc.aws_subnet_second_id]
+  subnet_ids = [module.vpc.aws_subnet_main_id, module.vpc.aws_subnet_second_id]
 }

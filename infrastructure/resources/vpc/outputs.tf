@@ -1,5 +1,5 @@
 output "aws_security_group_allow_all_id" {
-    value = aws_security_group.allow_all.id
+  value = aws_security_group.allow_all.id
 }
 
 output "aws_subnet_main_id" {
