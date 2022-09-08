@@ -45,7 +45,7 @@ public sealed partial class DiscountsCommandHandlers :
     {
         var discount = await _ctx.Discounts.FirstOrDefaultAsync(q =>
             q.Name == req.Name &&
-            q.Id == req.Id
+            q.Id != req.Id
         );
 
         if (discount is null)
