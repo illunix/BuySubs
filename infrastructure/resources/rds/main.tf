@@ -10,33 +10,20 @@ module "vpc" {
   source = "../vpc"
 }
 
-resource "aws_rds_cluster" "main" {
-  serverlessv2_scaling_configuration {
-    min_capacity = 2
-    max_capacity = 4
-  }
-
-  engine                  = "aurora-postgresql"
-  availability_zones      = ["eu-west-2a"]
-  database_name           = "BuySubs"
-  master_username         = "foo"
-  master_password         = "baregeogoevne"
+resource "aws_db_instance" "main" {
+  allocated_storage       = "5"
+  storage_type            = "standard"
+  engine                  = "postgres"
+  instance_class          = "db.t3.small"
+  db_name                 = "BuySubs"
+  username                = "foo"
+  password                = "baregeogoevne"
   vpc_security_group_ids  = [module.vpc.aws_security_group_allow_all_id]
   db_subnet_group_name    = aws_db_subnet_group.main.id
-  skip_final_snapshot     = true
-  backup_retention_period = 0
+  publicly_accessible = true
   apply_immediately       = true
-}
-
-resource "aws_rds_cluster_instance" "main" {
-  count                        = 1
-  cluster_identifier           = aws_rds_cluster.main.id
-  instance_class               = "db.serverless"
-  engine                       = aws_rds_cluster.main.engine
-  engine_version               = aws_rds_cluster.main.engine_version
-  publicly_accessible          = true
-  db_subnet_group_name         = aws_rds_cluster.main.db_subnet_group_name
-  performance_insights_enabled = false
+  backup_retention_period = 0
+  skip_final_snapshot     = true
 }
 
 resource "aws_db_subnet_group" "main" {
