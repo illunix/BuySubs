@@ -1,10 +1,7 @@
-﻿using BuySubs.BLL.Queries.Users;
-using MediatR;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using BuySubs.DAL.Context;
 using Microsoft.EntityFrameworkCore;
-using BuySubs.Common.DTO.Sites;
 using BuySubs.BLL.Interfaces;
 using BuySubs.BLL.Queries.Sites;
 using BuySubs.BLL.Mappings;
