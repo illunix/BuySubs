@@ -13,7 +13,8 @@ namespace BuySubs.BLL.CommandHandlers;
 
 public sealed partial class ServicesCommandHandlers :
     IHttpRequestHandler<CreateServiceCommand>,
-    IHttpRequestHandler<UpdateServiceCommand>
+    IHttpRequestHandler<UpdateServiceCommand>,
+    IHttpRequestHandler<DeleteServiceCommand>
 {
     private readonly InternalDbContext _ctx;
     private readonly ServiceMapper _mapper;
