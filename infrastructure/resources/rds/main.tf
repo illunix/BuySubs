@@ -20,7 +20,7 @@ resource "aws_db_instance" "main" {
   password                = "baregeogoevne"
   vpc_security_group_ids  = [module.vpc.aws_security_group_allow_all_id]
   db_subnet_group_name    = aws_db_subnet_group.main.id
-  publicly_accessible = true
+  publicly_accessible     = true
   apply_immediately       = true
   backup_retention_period = 0
   skip_final_snapshot     = true
