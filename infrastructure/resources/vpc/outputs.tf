@@ -9,3 +9,7 @@ output "aws_subnet_main_id" {
 output "aws_subnet_second_id" {
   value = aws_subnet.second.id
 }
+
+output "aws_route_table_id" {
+  value = aws_route_table.main.id
+}
