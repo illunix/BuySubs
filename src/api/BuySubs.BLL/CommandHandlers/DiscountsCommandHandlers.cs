@@ -43,16 +43,10 @@ public sealed partial class DiscountsCommandHandlers :
         CancellationToken ct
     )
     {
-        var discount = await _ctx.Discounts.FirstOrDefaultAsync(q =>
-            q.Name == req.Name &&
-            q.Id != req.Id
-        );
+        var discount = await _ctx.Discounts.FindAsync(req.Name);
 
         if (discount is null)
-            throw new EntityWithSamePropertyValueAlreadyExistException(
-                nameof(Discount),
-                nameof(Discount.Name)
-            );
+            throw new NotFoundException(nameof(Discount));
 
         _ctx.Update(_mapper.AdaptToEntity(req));
 
@@ -67,7 +61,7 @@ public sealed partial class DiscountsCommandHandlers :
         CancellationToken ct
     )
     {
-        var discount = await _ctx.Discounts.FirstOrDefaultAsync(q => q.Id == req.Id);
+        var discount = await _ctx.Discounts.FindAsync(req.Id);
 
         if (discount is null)
             throw new NotFoundException(nameof(Discount));

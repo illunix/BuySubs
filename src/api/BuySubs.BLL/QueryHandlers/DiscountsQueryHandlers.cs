@@ -33,7 +33,9 @@ public sealed partial class DiscountsQueryHandlers :
         CancellationToken ct
     )
     {
-        var discount = await _ctx.Discounts.FirstOrDefaultAsync(q => q.Id == req.Id);
+        var discount = await _ctx.Discounts
+            .AsNoTracking()
+            .FirstOrDefaultAsync(q => q.Id == req.Id);
         if (discount is null)
             throw new NotFoundException(nameof(Discount));
 
