@@ -33,10 +33,12 @@ public sealed partial class OrdersQueryHandlers :
         CancellationToken ct
     )
     {
-        var order = await _ctx.Orders.FirstOrDefaultAsync(q => q.Id == req.Id);
+        var order = await _ctx.Orders
+            .AsNoTracking()
+            .FirstOrDefaultAsync(q => q.Id == req.Id);
         if (order is null)
             throw new NotFoundException(nameof(Order));
 
-        return Results.Ok(order);
+        return Results.Ok(_mapper.AdaptToEntity(req));
     }
 }

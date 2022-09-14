@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace BuySubs.API.Validators.Orders;
 
-public class CreateOrderCommandValidator : AbstractValidator<CreateOrderCommand>
+public sealed class CreateOrderCommandValidator : AbstractValidator<CreateOrderCommand>
 {
     public CreateOrderCommandValidator()
     {

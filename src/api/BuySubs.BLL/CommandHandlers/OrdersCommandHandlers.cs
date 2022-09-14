@@ -11,9 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BuySubs.BLL.CommandHandlers;
 
 public sealed partial class OrdersCommandHandlers :
-    IHttpRequestHandler<CreateOrderCommand>,
-    IHttpRequestHandler<UpdateOrderCommand>,
-    IHttpRequestHandler<DeleteOrderCommand>
+    IHttpRequestHandler<CreateOrderCommand>
 {
     private readonly InternalDbContext _ctx;
     private readonly OrderMapper _mapper;
@@ -32,46 +30,6 @@ public sealed partial class OrdersCommandHandlers :
 
         _ctx.Add(_mapper.AdaptToEntity(req));
 
-
-        await _ctx.SaveChangesAsync();
-
-        return Results.Ok();
-    }
-
-    [HttpPut("orders")]
-    public async Task<IResult> Handle(
-        UpdateOrderCommand req,
-        CancellationToken ct
-    )
-    {
-        var order = await _ctx.Orders.FirstOrDefaultAsync(q =>
-            q.ServiceId == req.ServiceId &&
-            q.Id != req.Id
-        );
-        if (order is null)
-            throw new EntityWithSamePropertyValueAlreadyExistException(
-                nameof(Order),
-                nameof(Order.ServiceId)
-            );
-
-        _ctx.Update(_mapper.AdaptToEntity(req));
-        
-        await _ctx.SaveChangesAsync();
-
-        return Results.Ok();
-    }
-
-    [HttpDelete("orders")]
-    public async Task<IResult> Handle(
-        DeleteOrderCommand req,
-        CancellationToken ct
-    )
-    {
-        var order = await _ctx.Orders.FirstOrDefaultAsync(q => q.Id == req.Id);
-        if (order is null)
-            throw new NotFoundException(nameof(Order));
-
-        _ctx.Remove(order);
 
         await _ctx.SaveChangesAsync();
 
