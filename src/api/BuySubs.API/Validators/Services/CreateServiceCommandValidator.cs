@@ -13,7 +13,6 @@ public class CreateServiceCommandValidator : AbstractValidator<CreateServiceComm
         RuleFor(q => q.Name)
             .NotEmpty();
 
-
         RuleFor(q => q.Price)
             .NotEmpty();
     }

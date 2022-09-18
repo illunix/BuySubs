@@ -9,6 +9,8 @@ public sealed class InternalDbContext : DbContext
     public DbSet<Site> Sites { get; init; }
     public DbSet<Service> Services { get; init; }
 
+    public DbSet<Discount> Discounts { get; init; }
+
     public InternalDbContext(DbContextOptions<InternalDbContext> options)
         : base(options)
     {
