@@ -8,6 +8,7 @@ public sealed class InternalDbContext : DbContext
     public DbSet<User> Users { get; init; }
     public DbSet<Site> Sites { get; init; }
     public DbSet<Service> Services { get; init; }
+    public DbSet<Order> Orders { get; init; }
 
     public DbSet<Discount> Discounts { get; init; }
 
